@@ -36,6 +36,30 @@ public class TaskController {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Task not Found!");
     }
 
+    //Get Completed Task
+
+    @GetMapping("/completed")
+    public List<Task> getCompletedTask(){
+        return tasks.stream().filter(Task::getCompleted).toList();
+    }
+    
+    //Gets Sorted Tasks
+    @GetMapping("/sorted")
+    public List<Task> getTasksSorted(@RequestParam(defaultValue= "asc") String order){
+        if(!order.equalsIgnoreCase("asc") && !order.equalsIgnoreCase("desc")){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid order parameter, Use 'asc' or 'desc' .");
+        }
+
+        List <Task> sortedTasks = new ArrayList<>(tasks);
+        if (order.equalsIgnoreCase("desc")){
+            Collections.sort(sortedTasks,(a,b)-> b.getTitle().compareTo(a.getTitle())); 
+        }
+        else{
+            Collections.sort(sortedTasks,(a,b) -> a.getTitle().compareTo(b.getTitle()));
+        }
+
+        return sortedTasks;
+    }
     //
     @GetMapping("/{id}")
     public Task getTaskById(@PathVariable Long id){
